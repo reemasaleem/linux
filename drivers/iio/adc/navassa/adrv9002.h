@@ -24,6 +24,7 @@
 #include "adi_adrv9001_rx_gaincontrol_types.h"
 #include "adi_adrv9001_rxSettings_types.h"
 #include "adi_adrv9001_ssi_types.h"
+#include "adi_adrv9001_types.h"
 #include "linux_platform.h"
 
 struct iio_chan_spec;
@@ -36,7 +37,8 @@ struct iio_chan_spec;
 #define ADRV9002_FH_BIN_ATTRS_CNT	(ADRV9002_FH_HOP_SIGNALS_NR * ADRV9002_FH_TABLES_NR)
 #define ADRV9002_RX_MIN_GAIN_IDX	ADI_ADRV9001_RX_GAIN_INDEX_MIN
 #define ADRV9002_RX_MAX_GAIN_IDX	ADI_ADRV9001_RX_GAIN_INDEX_MAX
-
+#define ADRV9002_INIT_CALS_COEFFS_MAX	\
+	(ADI_ADRV9001_WB_MAX_NUM_UNIQUE_CALS * ADI_ADRV9001_WB_MAX_NUM_COEFF)
 enum {
 	ADRV9002_CHANN_1,
 	ADRV9002_CHANN_2,
@@ -204,6 +206,8 @@ struct adrv9002_chip_info {
 	const struct iio_chan_spec *channels;
 	const char *cmos_profile;
 	const char *lvd_profile;
+	const char *cmos_cals;
+	const char *lvds_cals;
 	const char *name;
 	u32 num_channels;
 	u32 n_tx;
@@ -216,6 +220,11 @@ struct adrv9002_ext_lo {
 	u16 divider;
 };
 
+struct adrv9002_warm_boot {
+	u32 size;
+	u8 cals[ADRV9002_INIT_CALS_COEFFS_MAX];
+};
+
 struct adrv9002_rf_phy {
 	const struct adrv9002_chip_info *chip;
 	struct spi_device		*spi;
@@ -223,6 +232,7 @@ struct adrv9002_rf_phy {
 	struct gpio_desc		*reset_gpio;
 	struct gpio_desc		*ssi_sync;
 	struct iio_chan_spec		*iio_chan;
+	struct adrv9002_warm_boot	warm_boot;
 	/* Protect against concurrent accesses to the device */
 	struct mutex			lock;
 	struct clk			*clks[NUM_ADRV9002_CLKS];
