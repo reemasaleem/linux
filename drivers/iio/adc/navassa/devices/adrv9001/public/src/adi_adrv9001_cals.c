@@ -811,7 +811,7 @@ int32_t adi_adrv9001_cals_InitCals_WarmBoot_UniqueEnabledCals_Get(adi_adrv9001_D
 		adi_common_ChannelNumber_e channel;
 		for (channel = ADI_CHANNEL_1; channel <= ADI_CHANNEL_2; channel++)
 		{
-			uint32_t chInitMask = maskChannel1;
+			uint32_t chInitMask = channel == ADI_CHANNEL_1 ? maskChannel1 : maskChannel2;
 			profMask = profMask >> (8 * (channel - 1));
 			if (profMask == 0)
 				continue;
@@ -855,7 +855,7 @@ int32_t adi_adrv9001_cals_InitCals_WarmBoot_Coefficients_MaxArray_Get(adi_adrv90
 		adi_common_ChannelNumber_e channel;
 		for (channel = ADI_CHANNEL_1; channel <= ADI_CHANNEL_2; channel++)
 		{
-			uint32_t chInitMask = maskChannel1;
+			uint32_t chInitMask = channel == ADI_CHANNEL_1 ? maskChannel1 : maskChannel2;
 			profMask = profMask >> (8 * (channel - 1));
 			if (profMask == 0)
 				continue;
@@ -900,7 +900,7 @@ int32_t adi_adrv9001_cals_InitCals_WarmBoot_Coefficients_UniqueArray_Get(adi_adr
 		adi_common_ChannelNumber_e channel;
 		for (channel = ADI_CHANNEL_1; channel <= ADI_CHANNEL_2; channel++)
 		{
-			uint32_t chInitMask = maskChannel1;
+			uint32_t chInitMask = channel == ADI_CHANNEL_1 ? maskChannel1 : maskChannel2;
 			profMask = profMask >> (8 * (channel - 1));
 			if (profMask == 0)
 				continue;
@@ -943,7 +943,7 @@ int32_t adi_adrv9001_cals_InitCals_WarmBoot_Coefficients_MaxArray_Set(adi_adrv90
 		adi_common_ChannelNumber_e channel;
 		for (channel = ADI_CHANNEL_1; channel <= ADI_CHANNEL_2; channel++)
 		{
-			uint32_t chInitMask = maskChannel1;
+			uint32_t chInitMask = channel == ADI_CHANNEL_1 ? maskChannel1 : maskChannel2;
 			profMask = profMask >> (8 * (channel - 1));
 			if (profMask == 0)
 				continue;
@@ -989,7 +989,7 @@ int32_t adi_adrv9001_cals_InitCals_WarmBoot_Coefficients_UniqueArray_Set(adi_adr
 		adi_common_ChannelNumber_e channel;
 		for (channel = ADI_CHANNEL_1; channel <= ADI_CHANNEL_2; channel++)
 		{
-			uint32_t chInitMask = maskChannel1;
+			uint32_t chInitMask = channel == ADI_CHANNEL_1 ? maskChannel1 : maskChannel2;
 			profMask = profMask >> (8 * (channel - 1));
 			if (profMask == 0)
 				continue;
