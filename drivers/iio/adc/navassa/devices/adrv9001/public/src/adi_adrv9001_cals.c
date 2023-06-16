@@ -963,6 +963,7 @@ int32_t adi_adrv9001_cals_InitCals_WarmBoot_Coefficients_MaxArray_Set(adi_adrv90
 }
 int32_t adi_adrv9001_cals_InitCals_WarmBoot_Coefficients_UniqueArray_Set(adi_adrv9001_Device_t *device,
 	uint8_t *memStartAddress,
+	uint32_t memSize,
 	uint32_t maskChannel1,
 	uint32_t maskChannel2)
 {
@@ -975,7 +976,7 @@ int32_t adi_adrv9001_cals_InitCals_WarmBoot_Coefficients_UniqueArray_Set(adi_adr
 	static uint32_t vecTbl[ADI_ADRV9001_WB_MAX_NUM_ENTRY];
 	static uint8_t calVal[ADI_ADRV9001_WB_MAX_NUM_COEFF];
 #endif
-	int calNo;
+	int calNo, sz = 0;
 
 	ADI_EXPECT(adi_adrv9001_arm_Memory_Read32, device, 0x20020000, tblSize, sizeof(tblSize), 0);
 	ADI_EXPECT(adi_adrv9001_arm_Memory_Read32, device, 0x20020004, vecTbl, tblSize[0] * 16, 1);
@@ -995,9 +996,18 @@ int32_t adi_adrv9001_cals_InitCals_WarmBoot_Coefficients_UniqueArray_Set(adi_adr
 				continue;
 			if (((initMask & chInitMask) != 0) && ((profMask & device->devStateInfo.chProfEnMask[channel - 1]) != 0))
 			{
+				/*
+				 * Check if there are coefficients enough in the buffer and report
+				 * error if don't have enough. Note that for the case where memSize > sz
+				 * we just ignore the extra coefficients.
+				 *
+				 * We are also reusing ADI_RANGE_CHECK even though sz < 0 is not really possible.
+				 */
+				ADI_RANGE_CHECK(device, sz + ADI_ADRV9001_WB_MAX_NUM_COEFF, 0, memSize);
 				memcpy(calVal, memStartAddress, ADI_ADRV9001_WB_MAX_NUM_COEFF);
 				ADI_EXPECT(adi_adrv9001_arm_Memory_Write, device, addr, calVal, size, 0);
 				memStartAddress += ADI_ADRV9001_WB_MAX_NUM_COEFF;
+				sz += ADI_ADRV9001_WB_MAX_NUM_COEFF;
 			}
 		}
 	}

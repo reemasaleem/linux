@@ -354,20 +354,21 @@ int32_t adi_adrv9001_cals_Dynamic_profiles_calibrate(adi_adrv9001_Device_t *adrv
 																uint32_t maskChannel2);
 /**
 * \brief Write the InitCal coefficients needed for Warmboot from allocated memory
-* 
+*
 * \note Message type: \ref timing_mailbox "Mailbox command"
-* 
+*
 * \pre Channel state is STANDBY
-* 
+*
 * \param[in]  device            Context variable - Pointer to the ADRV9001 device settings data structure
 * \param[in,out]  memStartAddress   Pointer to start address of memory block that has been allocated and contains warmbootMemoryNumBytes
 * \param[in]  maskChannel1      Calibration bit mask for channel 1
 * \param[in]  maskChannel2      Calibration bit mask for channel 2
-* 
+*
 * \returns A code indicating success (ADI_COMMON_ACT_NO_ACTION) or the required action to recover
 */
 	int32_t adi_adrv9001_cals_InitCals_WarmBoot_Coefficients_UniqueArray_Set(adi_adrv9001_Device_t *device,
 		uint8_t *memStartAddress,
+		uint32_t memSize,
 		uint32_t maskChannel1,
 		uint32_t maskChannel2);
 #ifdef __cplusplus
