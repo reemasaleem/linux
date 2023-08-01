@@ -49,6 +49,7 @@ enum iio_chan_type {
 	IIO_MASSCONCENTRATION,
 	IIO_GENERIC_DATA,
 	IIO_FLAGS,
+	IIO_DELTA_ANGL,
 };
 
 enum iio_modifier {
