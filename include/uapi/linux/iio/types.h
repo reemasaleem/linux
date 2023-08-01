@@ -50,6 +50,7 @@ enum iio_chan_type {
 	IIO_GENERIC_DATA,
 	IIO_FLAGS,
 	IIO_DELTA_ANGL,
+	IIO_DELTA_VELOCITY,
 };
 
 enum iio_modifier {
