@@ -43,6 +43,10 @@ obj-$(CONFIG_ADM1177) += adm1177.o
 cf_axi_adc-y := cf_axi_adc_core.o
 obj-$(CONFIG_CF_AXI_ADC) += cf_axi_adc.o
 
+ad405x-y := ad405x/ad405x.o
+obj-$(CONFIG_AD405X) += ad405x/ad405x_core.o
+obj-$(CONFIG_AD405X_I3C) += ad405x/ad405x_i3c.o
+
 ad9208_drv-y := ad9208.o \
 	ad9208/ad9208_adc_api.o \
 	ad9208/ad9208_api.o \
@@ -196,3 +200,7 @@ obj-$(CONFIG_XILINX_XADC) += xilinx-xadc.o
 obj-$(CONFIG_XILINX_AMS) += xilinx-ams.o
 obj-$(CONFIG_SD_ADC_MODULATOR) += sd_adc_modulator.o
 obj-$(CONFIG_VERSAL_SYSMON) += versal-sysmon.o
+ad405x-y := ad405x/ad405x_core.o
+
+obj-$(CONFIG_AD405X) += ad405x.o
+obj-$(CONFIG_AD405X_I3C) += ad405x_i3c.o
