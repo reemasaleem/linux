@@ -1,4 +1,12 @@
 # SPDX-License-Identifier: GPL-2.0-only
+config ADI_I3C_CONTROLLER
+	tristate "Analog Devices I3C controller driver"
+	depends on I3C
+	depends on HAS_IOMEM
+	depends on !(ALPHA || PARISC)
+	help
+	  Support for Analog Devices I3C Controller.
+
 config CDNS_I3C_MASTER
 	tristate "Cadence I3C master driver"
 	depends on I3C
@@ -43,3 +51,14 @@ config MIPI_I3C_HCI
 
 	  This driver can also be built as a module.  If so, the module will be
 	  called mipi-i3c-hci.
+
+config ADI_I3C_CONTROLLER
+	tristate "Analog Devices I3C controller driver"
+	depends on I3C
+	depends on HAS_IOMEM
+	depends on !(ALPHA || PARISC)
+	help
+	  Support for Analog Devices MIPI I3C Controller.
+
+	  For details please see
+	  https://wiki.analog.com
