@@ -301,9 +301,9 @@ static int adrv9009_set_jesd_lanerate(struct adrv9009_rf_phy *phy,
 				      taliseJesd204bDeframerConfig_t *deframer,
 				      u32 *lmfc)
 {
-	bool clk_enable = __clk_is_enabled(link_clk);
 	unsigned long lane_rate_kHz;
 	u32 m, l, k, f, lmfc_tmp;
+	bool clk_enable;
 	int ret;
 
 	if (!lmfc)
@@ -311,6 +311,8 @@ static int adrv9009_set_jesd_lanerate(struct adrv9009_rf_phy *phy,
 
 	if (IS_ERR_OR_NULL(link_clk))
 		return 0;
+
+	clk_enable = __clk_is_enabled(link_clk);
 
 	if (framer) {
 		m = framer->M;
@@ -919,8 +921,6 @@ static int adrv9009_do_setup(struct adrv9009_rf_phy *phy)
 	}
 
 	/*** < User Sends SYSREF Here > ***/
-
-
 	adrv9009_sysref_req(phy, SYSREF_CONT_ON);
 
 	if (has_rx_and_en(phy)) {
@@ -952,9 +952,8 @@ static int adrv9009_do_setup(struct adrv9009_rf_phy *phy)
 		adrv9009_spi_write(phy->spi, TALISE_ADDR_DES_PHY_GENERAL_CTL_1, phy_ctrl);
 	}
 
-	adrv9009_sysref_req(phy, SYSREF_CONT_OFF);
-
 	/*** < User Sends SYSREF Here > ***/
+	adrv9009_sysref_req(phy, SYSREF_CONT_OFF);
 
 	/*** < Insert User JESD204B Sync Verification Code Here > ***/
 
@@ -6480,7 +6479,6 @@ static int adrv9009_probe(struct spi_device *spi)
 	struct adrv9009_rf_phy *phy;
 	const struct jesd204_dev_data *jesd204_init;
 	struct jesd204_dev *jdev;
-	struct clk *clk = NULL;
 	const char *name;
 	int ret;
 
@@ -6508,11 +6506,6 @@ static int adrv9009_probe(struct spi_device *spi)
 	if (IS_ERR(jdev))
 		return PTR_ERR(jdev);
 
-	clk = devm_clk_get(&spi->dev, jdev ? "dev_clk" : (id == ID_ADRV90082) ?
-			   "jesd_tx_clk" : "jesd_rx_clk");
-	if (IS_ERR(clk))
-		return PTR_ERR(clk);
-
 	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*phy));
 	if (indio_dev == NULL)
 		return -ENOMEM;
@@ -6539,18 +6532,26 @@ static int adrv9009_probe(struct spi_device *spi)
 					      GPIOD_OUT_HIGH);
 
 	if (!phy->jdev) {
+		if (has_tx(phy)) {
+			phy->jesd_tx_clk =
+				devm_clk_get_optional(&spi->dev, "jesd_tx_clk");
+			if (IS_ERR(phy->jesd_tx_clk))
+				return PTR_ERR(phy->jesd_tx_clk);
+		}
 
-		if (id == ID_ADRV90082)
-			phy->jesd_tx_clk = clk;
-		else
-			phy->jesd_rx_clk = clk;
+		if (has_rx(phy)) {
+			phy->jesd_rx_clk =
+				devm_clk_get_optional(&spi->dev, "jesd_rx_clk");
+			if (IS_ERR(phy->jesd_rx_clk))
+				return PTR_ERR(phy->jesd_rx_clk);
+		}
 
-		if (id == ID_ADRV9009 || id == ID_ADRV9009_X2 || id == ID_ADRV9009_X4)
-			phy->jesd_tx_clk = devm_clk_get(&spi->dev, "jesd_tx_clk");
-
-		if (id == ID_ADRV9009 || id == ID_ADRV9009_X2 ||
-			id == ID_ADRV9009_X4 || id == ID_ADRV90082)
-			phy->jesd_rx_os_clk = devm_clk_get(&spi->dev, "jesd_rx_os_clk");
+		if (has_obs(phy)) {
+			phy->jesd_rx_os_clk =
+				devm_clk_get_optional(&spi->dev, "jesd_rx_os_clk");
+			if (IS_ERR(phy->jesd_rx_os_clk))
+				return PTR_ERR(phy->jesd_rx_os_clk);
+		}
 
 		phy->dev_clk = devm_clk_get(&spi->dev, "dev_clk");
 		if (IS_ERR(phy->dev_clk))
@@ -6580,7 +6581,9 @@ static int adrv9009_probe(struct spi_device *spi)
 
 		priv = jesd204_dev_priv(jdev);
 		priv->phy = phy;
-		phy->dev_clk = clk;
+		phy->dev_clk = devm_clk_get(&spi->dev, "dev_clk");
+		if (IS_ERR(phy->dev_clk))
+			return PTR_ERR(phy->dev_clk);
 	}
 
 	ret = clk_prepare_enable(phy->dev_clk);
