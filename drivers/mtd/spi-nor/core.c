@@ -1948,8 +1948,9 @@ static const struct flash_info *spi_nor_match_id(struct spi_nor *nor,
 				/* ST and MICRON seem to use the same manufacturer ID */
 				if (id[0] == CFI_MFR_MICRON || id[0] == CFI_MFR_ST)
 					dev_info(nor->dev, "SPI-NOR-UniqueID %*phN\n",
-						 SPI_NOR_MAX_EDID_LEN - info->id_len,
-						 &id[info->id_len]);
+						 SPI_NOR_MAX_EDID_LEN - part->id_len,
+						 &id[part->id_len]);
+
 				return part;
 			}
 		}

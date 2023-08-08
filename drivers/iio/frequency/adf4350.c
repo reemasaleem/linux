@@ -368,7 +368,7 @@ static struct adf4350_platform_data *adf4350_parse_dt(struct device *dev)
 
 	pdata = devm_kzalloc(dev, sizeof(*pdata), GFP_KERNEL);
 	if (!pdata)
-		return ERR_PTR(-ENOMEM);
+		return NULL;
 
 	snprintf(pdata->name, sizeof(pdata->name), "%pfw", dev_fwnode(dev));
 
@@ -458,8 +458,8 @@ static int adf4350_probe(struct spi_device *spi)
 
 	if (dev_fwnode(&spi->dev)) {
 		pdata = adf4350_parse_dt(&spi->dev);
-		if (IS_ERR(pdata))
-			return PTR_ERR(pdata);
+		if (pdata == NULL)
+			return -EINVAL;
 	} else {
 		pdata = spi->dev.platform_data;
 	}

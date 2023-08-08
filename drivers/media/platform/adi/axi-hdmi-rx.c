@@ -921,10 +921,10 @@ static int axi_hdmi_rx_probe(struct platform_device *pdev)
 	else
 		hdmi_rx->bus_width = 16;
 
-	v4l2_async_notifier_init(&hdmi_rx->notifier);
-	asd = v4l2_async_notifier_add_fwnode_remote_subdev(&hdmi_rx->notifier,
-							   of_fwnode_handle(ep_node),
-							   struct v4l2_async_subdev);
+	v4l2_async_nf_init(&hdmi_rx->notifier);
+	asd = v4l2_async_nf_add_fwnode_remote(&hdmi_rx->notifier,
+					      of_fwnode_handle(ep_node),
+					      struct v4l2_async_subdev);
 	of_node_put(ep_node);
 	if (IS_ERR(asd)) {
 		ret = PTR_ERR(asd);
@@ -933,8 +933,8 @@ static int axi_hdmi_rx_probe(struct platform_device *pdev)
 
 	hdmi_rx->notifier.ops = &axi_hdmi_rx_async_ops;
 
-	ret = v4l2_async_notifier_register(&hdmi_rx->v4l2_dev,
-		&hdmi_rx->notifier);
+	ret = v4l2_async_nf_register(&hdmi_rx->v4l2_dev,
+				     &hdmi_rx->notifier);
 	if (ret) {
 		dev_err(&pdev->dev, "Error %d registering device nodes\n", ret);
 		goto err_device_unregister;
@@ -959,7 +959,7 @@ static int axi_hdmi_rx_remove(struct platform_device *pdev)
 {
 	struct axi_hdmi_rx *hdmi_rx = platform_get_drvdata(pdev);
 
-	v4l2_async_notifier_unregister(&hdmi_rx->notifier);
+	v4l2_async_nf_unregister(&hdmi_rx->notifier);
 	video_unregister_device(&hdmi_rx->stream.vdev);
 	v4l2_device_unregister(&hdmi_rx->v4l2_dev);
 	dma_release_channel(hdmi_rx->stream.chan);

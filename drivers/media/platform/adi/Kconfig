@@ -4,7 +4,7 @@
 
 config VIDEO_AXI_HDMI_RX
 	tristate "AXI-HDMI-RX support"
-	depends on MEDIA_SUPPORT && VIDEO_V4L2 && I2C
+	depends on MEDIA_SUPPORT && VIDEO_DEV && I2C
 	depends on GPIOLIB || COMPILE_TEST
 	select I2C_ALGOBIT
 	select VIDEO_ADV7604
@@ -15,7 +15,7 @@ config VIDEO_AXI_HDMI_RX
 
 config VIDEO_IMAGEON_BRIDGE
 	tristate "IMAGEON-BRIDGE support"
-	depends on MEDIA_SUPPORT && VIDEO_V4L2 && I2C
+	depends on MEDIA_SUPPORT && VIDEO_DEV && I2C
 	depends on GPIOLIB || COMPILE_TEST
 	select I2C_ALGOBIT
 	select VIDEO_ADV7511
@@ -30,3 +30,4 @@ config ADI_AXI_VIDEO_FRAME_BUFFER
 	help
 	  To compile this driver as a module, choose M here: the
 	  module will be called adi-axi-fb.
+

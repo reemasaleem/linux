@@ -395,6 +395,15 @@ config COMMON_CLK_OXNAS
 	help
 	  Support for the OXNAS SoC Family clocks.
 
+config COMMON_CLK_RS9_PCIE
+	tristate "Clock driver for Renesas 9-series PCIe clock generators"
+	depends on I2C
+	depends on OF
+	select REGMAP_I2C
+	help
+	  This driver supports the Renesas 9-series PCIe clock generator
+	  models 9FGV/9DBV/9DMV/9FGL/9DML/9QXL/9SQ.
+
 config COMMON_CLK_ALTERA_A10_FPLL
 	tristate "Clock driver for Altera Arria10 FPLL"
 	depends on ARCH_INTEL_SOCFPGA || NIOS2
@@ -411,14 +420,6 @@ config COMMON_CLK_ALTERA_C5_FPLL
 
 	  The Cyclone5 Fractional PLL can generate up to 9 clock output
 	  signals.
-config COMMON_CLK_RS9_PCIE
-	tristate "Clock driver for Renesas 9-series PCIe clock generators"
-	depends on I2C
-	depends on OF
-	select REGMAP_I2C
-	help
-	  This driver supports the Renesas 9-series PCIe clock generator
-	  models 9FGV/9DBV/9DMV/9FGL/9DML/9QXL/9SQ.
 
 config COMMON_CLK_VC5
 	tristate "Clock driver for IDT VersaClock 5,6 devices"
@@ -461,7 +462,7 @@ config COMMON_CLK_STM32H7
 config COMMON_CLK_MMP2
 	def_bool COMMON_CLK && (MACH_MMP2_DT || MACH_MMP3_DT)
 	help
-	  Support for Marvell MMP2 and MMP3 SoC clockstristate "Clock dri
+	  Support for Marvell MMP2 and MMP3 SoC clocks
 
 config COMMON_CLK_MMP2_AUDIO
         tristate "Clock driver for MMP2 Audio subsystem"

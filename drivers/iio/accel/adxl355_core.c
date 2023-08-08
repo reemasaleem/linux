@@ -566,7 +566,7 @@ static int adxl355_write_raw(struct iio_dev *indio_dev,
 		return adxl355_set_odr(data, odr_idx);
 	case IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY:
 		hpf_idx = adxl355_find_match(data->adxl355_hpf_3db_table,
-					     ARRAY_SIZE(data->adxl355_hpf_3db_table),
+					ARRAY_SIZE(data->adxl355_hpf_3db_table),
 					     val, val2);
 		if (hpf_idx < 0)
 			return hpf_idx;

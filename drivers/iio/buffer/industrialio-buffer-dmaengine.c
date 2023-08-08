@@ -75,8 +75,8 @@ int iio_dmaengine_buffer_submit_block(struct iio_dma_buffer_queue *queue,
 		direction = DMA_MEM_TO_DEV;
 	}
 
-	block->block.bytes_used = min(block->block.size,
-				      dmaengine_buffer->max_size);
+	block->block.bytes_used = min_t(size_t, block->block.bytes_used,
+					dmaengine_buffer->max_size);
 	block->block.bytes_used = round_down(block->block.bytes_used,
 					     dmaengine_buffer->align);
 

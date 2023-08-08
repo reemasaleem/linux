@@ -1770,7 +1770,7 @@ static const struct iio_chan_spec_ext_info adrv9002_phy_tx_mux_ext_info[] = {
 			   &adrv9002_atten_control_mode_available),
 	IIO_ENUM("port_select", IIO_SEPARATE, &adrv9002_port_select_available),
 	IIO_ENUM_AVAILABLE("port_select", IIO_SEPARATE, &adrv9002_port_select_available),
-	IIO_ENUM("atten_control_mode", 0,
+	IIO_ENUM("atten_control_mode", IIO_SEPARATE,
 		 &adrv9002_atten_control_mode_available),
 	_ADRV9002_EXT_TX_INFO("rf_bandwidth", TX_RF_BANDWIDTH),
 	_ADRV9002_EXT_TX_INFO("quadrature_tracking_en", TX_QEC),

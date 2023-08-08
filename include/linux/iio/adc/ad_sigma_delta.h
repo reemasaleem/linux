@@ -66,7 +66,6 @@ struct ad_sigma_delta_info {
  * struct ad_sigma_delta - Sigma Delta device struct
  * @spi: The spi device associated with the Sigma Delta device.
  * @trig: The IIO trigger associated with the Sigma Delta device.
- * @num_slots: Number of sequencer slots
  *
  * Most of the fields are private to the sigma delta library code and should not
  * be accessed by individual drivers.
