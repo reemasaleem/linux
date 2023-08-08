@@ -41,7 +41,7 @@ config ADA4250
 	help
 	  Say yes here to build support for Analog Devices ADA4250
 	  SPI Amplifier's support. The driver provides direct access via
-          sysfs.
+	  sysfs.
 
 	  To compile this driver as a module, choose M here: the
 	  module will be called ada4250.
