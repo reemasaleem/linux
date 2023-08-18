@@ -101,6 +101,9 @@
 #define AD4858_AXI_REG_CNTRL_3		0x4C
 #define AD4858_AXI_PACKET_CONFIG	GENMASK(1, 0)
 #define AD4858_AXI_OVERSAMPLE_EN	BIT(2)
+#define AD4858_AXI_CRC_EN		BIT(8)
+
+#define AD4858_AXI_CRC_ERR		BIT(12)
 
 #define AD4858_AXI_ADC_TWOS_COMPLEMENT	0x01
 
@@ -335,6 +338,61 @@ static int ad4858_softspan_read(struct iio_dev *indio_dev,
 	return softspan;
 }
 
+static ssize_t ad4858_set_axi_crc(struct iio_dev *indio_dev,
+	 uintptr_t private, const struct iio_chan_spec *chan,
+	 const char *buf, size_t len)
+{
+	struct axiadc_converter *conv = iio_device_get_drvdata(indio_dev);
+	struct axiadc_state *st = iio_priv(conv->indio_dev);
+	unsigned int axi_reg;
+	bool enable;
+	int ret;
+
+	ret = strtobool(buf, &enable);
+	if (ret)
+		return ret;
+
+	axiadc_write(st, 0x4c, 0x100);
+
+	axi_reg = axiadc_read(st, AD4858_AXI_REG_CNTRL_3);
+	axi_reg &= ~AD4858_AXI_CRC_EN;
+	axi_reg |= FIELD_PREP(AD4858_AXI_CRC_EN, enable);
+	axiadc_write(st, AD4858_AXI_REG_CNTRL_3, axi_reg);
+
+	mdelay(1);
+
+	axi_reg = axiadc_read(st, ADI_REG_CHAN_STATUS(0));
+	axiadc_write(st, ADI_REG_CHAN_STATUS(0), axi_reg);
+
+	return len;
+}
+
+static ssize_t ad4858_get_axi_crc(struct iio_dev *indio_dev,
+	uintptr_t private, const struct iio_chan_spec *chan, char *buf)
+{
+	struct axiadc_converter *conv = iio_device_get_drvdata(indio_dev);
+	struct axiadc_state *st = iio_priv(conv->indio_dev);
+	unsigned int axi_reg;
+
+	axi_reg = axiadc_read(st, AD4858_AXI_REG_CNTRL_3);
+	axi_reg &= AD4858_AXI_CRC_EN;
+
+	return sprintf(buf, "%d\n", axi_reg ? 1 : 0);
+}
+
+static ssize_t ad4858_get_axi_crc_status(struct iio_dev *indio_dev,
+	uintptr_t private, const struct iio_chan_spec *chan, char *buf)
+{
+	struct axiadc_converter *conv = iio_device_get_drvdata(indio_dev);
+	struct axiadc_state *st = iio_priv(conv->indio_dev);
+	unsigned int axi_reg;
+
+	axi_reg = axiadc_read(st, ADI_REG_CHAN_STATUS(0));
+	axi_reg &= AD4858_AXI_CRC_ERR;
+
+	return sprintf(buf, "crc %s\n", axi_reg ? "error" : "ok");
+}
+
 static const struct iio_enum ad4858_os_ratio = {
 	.items = ad4858_os_ratios,
 	.num_items = ARRAY_SIZE(ad4858_os_ratios),
@@ -368,6 +426,17 @@ static struct iio_chan_spec_ext_info ad4858_ext_info[] = {
 	IIO_ENUM("softspan", IIO_SEPARATE, &ad4858_softspan_enum),
 	IIO_ENUM_AVAILABLE_SHARED("softspan", IIO_SHARED_BY_TYPE,
 				  &ad4858_softspan_enum),
+	{
+		.name = "axi_crc_en",
+		.read = ad4858_get_axi_crc,
+		.write = ad4858_set_axi_crc,
+		.shared = IIO_SHARED_BY_ALL,
+	},
+	{
+		.name = "axi_crc_status",
+		.read = ad4858_get_axi_crc_status,
+		.shared = IIO_SHARED_BY_ALL,
+	},
 	{},
 };
 
